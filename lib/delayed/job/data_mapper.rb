@@ -1,3 +1,12 @@
+# Prevent problem with extlib 0.9.11:
+# extlib-0.9.11 NameError: method `to_time' not defined in Time
+# http://groups.google.com/group/datamapper/browse_thread/thread/98f9a69dca23d80
+gem 'extlib', '>= 0.9.12'
+require 'extlib'
+
+require 'dm-aggregates'
+require 'dm-timestamps'
+
 module Delayed
   class Job
     include DataMapper::Resource
@@ -13,7 +22,8 @@ module Delayed
     property :locked_at, Time
     property :locked_by, String
     property :failed_at, Time
-    timestamps(:at)
+    property :created_at, DateTime
+    property :updated_at, DateTime
     
     def self.update_all(with, from)
       repository(:default).adapter.execute("UPDATE #{storage_names[:default]} SET #{Array(with)[0]} WHERE #{Array(from)[0]}", *Array(with)[1..-1].concat(Array(from)[1..-1])).affected_rows

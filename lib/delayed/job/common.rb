@@ -70,7 +70,11 @@ module Delayed
           self.run_at       = time
           self.last_error   = message + "\n" + backtrace.join("\n")
           self.unlock
-          save!
+          if defined?(DataMapper)
+            save
+          else
+            save!
+          end
         else
           logger.info "* [JOB] PERMANENTLY removing #{self.name} because of #{attempts} consequetive failures."
           destroy_failed_jobs ? destroy : update_attributes(:failed_at => Time.now)

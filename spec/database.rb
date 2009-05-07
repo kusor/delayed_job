@@ -8,7 +8,7 @@ require 'spec'
 #ENV['DM'] = 'true'
 if ENV['DM']
   puts "Running tests with DataMapper as the ORM."
-  require 'datamapper'
+  require 'dm-core'
   require File.dirname(__FILE__) + '/../init'
   DataMapper.logger = Logger.new('/tmp/dj.log')
   DataMapper.setup(:default, 'sqlite3::memory:')
