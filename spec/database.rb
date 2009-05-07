@@ -2,12 +2,12 @@ $:.unshift(File.dirname(__FILE__) + '/../lib')
 $:.unshift(File.dirname(__FILE__) + '/../../rspec/lib')
 
 require 'rubygems'
-require 'active_support'
 require 'spec'
 
 #ENV['DM'] = 'true'
 if ENV['DM']
   puts "Running tests with DataMapper as the ORM."
+  require 'active_support'
   require 'dm-core'
   require File.dirname(__FILE__) + '/../init'
   DataMapper.logger = Logger.new('/tmp/dj.log')
