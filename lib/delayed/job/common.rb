@@ -244,9 +244,6 @@ module Delayed
         block.call(job)
       end
       
-      def db_time_now
-        (ActiveRecord::Base.default_timezone == :utc) ? Time.now.utc : Time.now
-      end
     end
   end
 

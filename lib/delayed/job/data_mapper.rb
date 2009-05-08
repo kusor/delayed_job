@@ -44,6 +44,10 @@ module Delayed
     def self.logger
       DataMapper.logger
     end
+    
+    def self.db_time_now
+      Time.now
+    end
 
     before(:save) { self.run_at ||= self.class.db_time_now }
     
