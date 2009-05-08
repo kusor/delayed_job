@@ -21,7 +21,7 @@ module Delayed
     property :run_at, Time
     property :locked_at, Time
     property :locked_by, String
-    property :failed_at, Time
+    property :failed_at, Time, :default => nil
     property :created_at, DateTime
     property :updated_at, DateTime
     
