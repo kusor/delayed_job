@@ -16,12 +16,12 @@ module Delayed
     property :id, Serial
     property :priority, Integer, :default => 0
     property :attempts, Integer, :default => 0
-    property :handler, Text
-    property :last_error, Text
+    property :handler, Text, :lazy => false
+    property :last_error, Text, :lazy => false
     property :run_at, Time
-    property :locked_at, Time
+    property :locked_at, Time, :default => nil, :nullable => true
     property :locked_by, String
-    property :failed_at, Time, :default => nil
+    property :failed_at, Time, :default => nil, :nullable => true
     property :created_at, DateTime
     property :updated_at, DateTime
     
