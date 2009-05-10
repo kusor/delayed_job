@@ -8,6 +8,8 @@ require 'dm-aggregates'
 require 'dm-timestamps'
 
 module Delayed
+  # A job object that is persisted to the database.
+  # Contains the work object as a YAML field.
   class Job
     include DataMapper::Resource
     
