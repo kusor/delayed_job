@@ -79,14 +79,9 @@ describe 'random ruby objects' do
 
     Delayed::Job.count.should == 1
 
-    output = nil
+    Delayed::Job.reserve_and_run_one_job
 
-    Delayed::Job.reserve do |e|
-      puts e.inspect
-      output = e.perform
-    end
-
-    output.should == true
+    Delayed::Job.count.should == 0
 
   end
 
@@ -114,6 +109,22 @@ describe 'random ruby objects' do
     job.payload_object.method.should  == :read
     job.payload_object.args.should    == ["#{ENV['DM'] ? "DM" : "AR"}:Story:#{story.id}"]
     job.payload_object.perform.should == 'Epilog: Once upon...'
+  end                 
+  
+  it "should call send later on methods which are wrapped with handle_asynchronously" do
+    story = Story.create :text => 'Once upon...'
+  
+    Delayed::Job.count.should == 0
+  
+    story.whatever(1, 5)
+  
+    Delayed::Job.count.should == 1
+    
+    job =  Delayed::Job.respond_to?(:find) ? Delayed::Job.find(:first) : Delayed::Job.first
+    job.payload_object.class.should   == Delayed::PerformableMethod
+    job.payload_object.method.should  == :whatever_without_send_later
+    job.payload_object.args.should    == [1, 5]
+    job.payload_object.perform.should == 'Once upon...'
   end
 
 end
