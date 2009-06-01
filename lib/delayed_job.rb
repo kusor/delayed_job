@@ -1,4 +1,6 @@
-autoload :ActiveRecord, 'activerecord' if !defined?(DataMapper) 
+autoload :ActiveRecord, 'activerecord' if !defined?(DataMapper)
+
+defined?(Merb) ? require('merb-helpers') : require('activesupport')
 
 require File.dirname(__FILE__) + '/delayed/message_sending'
 require File.dirname(__FILE__) + '/delayed/performable_method'
