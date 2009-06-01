@@ -217,8 +217,6 @@ module Delayed
           records = all(:conditions => conditions, :order => Delayed::Job::NextTaskOrder, :limit => limit)
           DataMapper.logger.level = orig
         end
-      
-        records.sort_by { rand() }
       end
       
       # Run the next job we can get an exclusive lock on.
