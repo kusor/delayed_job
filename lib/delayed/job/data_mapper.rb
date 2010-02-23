@@ -21,9 +21,9 @@ module Delayed
     property :handler, Text, :lazy => false
     property :last_error, Text, :lazy => false
     property :run_at, Time
-    property :locked_at, Time, :default => nil, :nullable => true
+    property :locked_at, Time, :required => false
     property :locked_by, String
-    property :failed_at, Time, :default => nil, :nullable => true
+    property :failed_at, Time, :required => false
     property :created_at, DateTime
     property :updated_at, DateTime
     
