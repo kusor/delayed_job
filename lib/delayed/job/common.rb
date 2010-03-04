@@ -216,6 +216,7 @@ module Delayed
           orig, DataMapper.logger.level = DataMapper.logger.level, :error
           records = all(:conditions => conditions, :order => Delayed::Job::NextTaskOrder, :limit => limit)
           DataMapper.logger.level = orig
+          records
         end
       end
       
