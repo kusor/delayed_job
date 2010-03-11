@@ -76,7 +76,12 @@ module Delayed
           end
         else
           logger.info "* [JOB] PERMANENTLY removing #{self.name} because of #{attempts} consequetive failures."
-          destroy_failed_jobs ? destroy : update_attributes(:failed_at => Time.now)
+          if destroy_failed_jobs 
+            destroy
+          else
+            self.failed_at = Time.now
+            self.save
+          end
         end
       end
       
