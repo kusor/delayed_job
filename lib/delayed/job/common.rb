@@ -2,16 +2,16 @@ module Delayed
 
   class DeserializationError < StandardError
   end
-  
+
   module Common
-    
+
     def self.included(base)
       base.const_set("MAX_RUN_TIME", 4.hours) unless base.const_defined?("MAX_RUN_TIME")
       base.const_set("MAX_ATTEMPTS", 25) unless base.const_defined?("MAX_ATTEMTPS")
-      
+
       base.const_set("NextTaskSQL", '(run_at <= ? AND (locked_at IS NULL OR locked_at < ?) OR (locked_by = ?)) AND failed_at IS NULL') unless base.const_defined?("NextTaskSQL")
       base.const_set("NextTaskOrder", base.respond_to?(:get) ? [:priority.desc, :run_at.asc] : 'priority DESC, run_at ASC') unless base.const_defined?("NextTaskOrder")
-      
+
       base.const_set("ParseObjectFromYaml", /\!ruby\/\w+\:([^\s]+)/) unless base.const_defined?("ParseObjectFromYaml")
       base.class_eval do
         # By default failed jobs are destroyed after too many attempts.
@@ -28,15 +28,15 @@ module Delayed
         cattr_accessor :min_priority, :max_priority
         self.min_priority = nil
         self.max_priority = nil
-        
+
         include InstanceMethods
         extend ClassMethods
       end
     end
-    
+
     class LockError < StandardError
     end
-    
+
     module InstanceMethods
       def failed?
         failed_at
@@ -131,41 +131,41 @@ module Delayed
          klass.constantize
       end
     end
-    
+
     module ClassMethods
       def enqueue(*args, &block)
         object = block_given? ? EvaledJob.new(&block) : args.shift
-      
+
         unless object.respond_to?(:perform) || block_given?
           raise ArgumentError, 'Cannot enqueue items which do not respond to perform'
         end
-      
+
         priority = args.first || 0
         run_at   = args[1]
-      
+
         Job.create(:payload_object => object, :priority => priority.to_i, :run_at => run_at)
       end
-      
+
       def find_available(limit = 5, max_run_time = Delayed::Job::MAX_RUN_TIME)
-      
+
         time_now = db_time_now
-      
+
         sql = Delayed::Job::NextTaskSQL.dup
-      
+
         conditions = [time_now, time_now - max_run_time, worker_name]
-      
+
         if self.min_priority
           sql << ' AND (priority >= ?)'
           conditions << min_priority
         end
-      
+
         if self.max_priority
           sql << ' AND (priority <= ?)'
           conditions << max_priority
         end
-      
+
         conditions.unshift(sql)
-        
+
         #DM vs. AR
         if self.respond_to?(:find)
           records = ActiveRecord::Base.silence do
@@ -176,10 +176,10 @@ module Delayed
           records = all(:conditions => conditions, :order => Delayed::Job::NextTaskOrder, :limit => limit)
           DataMapper.logger.level = orig
         end
-      
+
         records.sort_by { rand() }
       end
-      
+
       # Get the payload of the next job we can get an exclusive lock on.
       # If no jobs are left we return nil
       def reserve(max_run_time = Delayed::Job::MAX_RUN_TIME, &block)
@@ -194,7 +194,7 @@ module Delayed
               job.destroy
             end
             logger.info "* [JOB] #{job.name} completed after %.4f" % runtime
-      
+
             return job
           rescue LockError
             # We did not get the lock, some other worker process must have
@@ -205,23 +205,23 @@ module Delayed
             return job
           end
         end
-      
+
         nil
       end
-      
+
       def clear_locks!
         update_all("locked_by = null, locked_at = null", ["locked_by = ?", worker_name])
       end
-      
+
       # This is a good hook if you need to report job processing errors in additional or different ways
       def log_exception(job, error)
         logger.error "* [JOB] #{job.name} failed with #{error.class.name}: #{error.message} - #{job.attempts} failed attempts"
         logger.error(error)
       end
-      
+
       def work_off(num = 100)
         success, failure = 0, 0
-      
+
         num.times do
           job = self.reserve do |j|
             begin
@@ -232,18 +232,18 @@ module Delayed
               raise
             end
           end
-      
+
           break if job.nil?
         end
-      
+
         return [success, failure]
       end
-      
+
       # Moved into its own method so that new_relic can trace it.
       def invoke_job(job, &block)
         block.call(job)
       end
-      
+
     end
   end
 

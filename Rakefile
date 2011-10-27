@@ -9,7 +9,7 @@ namespace :spec do
   else
     SPEC_OPTS = ["--color", "--format", "specdoc"]
   end
-  
+
   Spec::Rake::SpecTask.new('default') do |t|
     t.spec_opts = SPEC_OPTS
     if(ENV['TASK'])

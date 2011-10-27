@@ -1,4 +1,4 @@
-autoload :ActiveRecord, 'activerecord' if !defined?(DataMapper) 
+autoload :ActiveRecord, 'activerecord' if !defined?(DataMapper)
 
 require File.dirname(__FILE__) + '/delayed/message_sending'
 require File.dirname(__FILE__) + '/delayed/performable_method'

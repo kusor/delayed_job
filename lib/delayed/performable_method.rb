@@ -11,14 +11,14 @@ module Delayed
       self.args   = args.map { |a| dump(a) }
       self.method = method.to_sym
     end
-    
-    def display_name  
+
+    def display_name
       case self.object
       when CLASS_STRING_FORMAT then "#{$1}.#{method}"
       when AR_STRING_FORMAT, DM_STRING_FORMAT then "#{$1}##{method}"
       else "Unknown##{method}"
-      end      
-    end    
+      end
+    end
 
     def perform
       load(object).send(method, *args.map{|a| load(a)})
@@ -33,7 +33,7 @@ module Delayed
       case arg
       when CLASS_STRING_FORMAT then $1.constantize
       when AR_STRING_FORMAT then $1.constantize.find($2)
-      when DM_STRING_FORMAT then $1.constantize.get!($2) 
+      when DM_STRING_FORMAT then $1.constantize.get!($2)
       else arg
       end
     end
@@ -50,7 +50,7 @@ module Delayed
     def ar_to_string(obj)
       "AR:#{obj.class}:#{obj.id}"
     end
-    
+
     def dm_to_string(obj)
       "DM:#{obj.class}:#{obj.id}"
     end

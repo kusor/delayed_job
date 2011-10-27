@@ -16,19 +16,19 @@ if ENV['DM']
     include DataMapper::Resource
     property :id, Serial
     property :text, Text
-    
+
     def tell; text; end
   end
   DataMapper.auto_migrate!
 else
   puts "Running tests with ActiveRecord as the ORM."
   require 'active_record'
-  require File.dirname(__FILE__) + '/../init' 
+  require File.dirname(__FILE__) + '/../init'
   gem 'sqlite3-ruby'
   ActiveRecord::Base.logger = Logger.new('/tmp/dj.log')
   ActiveRecord::Base.establish_connection(:adapter => 'sqlite3', :database => '/tmp/jobs.sqlite')
   ActiveRecord::Migration.verbose = false
-  
+
   ActiveRecord::Schema.define do
 
     create_table :delayed_jobs, :force => true do |table|
@@ -42,13 +42,13 @@ else
       table.datetime :failed_at
       table.timestamps
     end
-  
+
     create_table :stories, :force => true do |table|
       table.string :text
     end
-  
+
   end
-  
+
   # Purely useful for test cases...
   class Story < ActiveRecord::Base
     def tell; text; end
